@@ -1,0 +1,349 @@
+openapi: 3.0.0
+info:
+  title: Interactive Personal Cognitive Sparse Encoded Architecture API
+  description: >-
+    This API provides an interactive, self-monitoring, pattern-recognizing, and
+    adaptive interface for a computer usage demonstration. It leverages a
+    personal cognitive sparse encoded architecture to enhance user experience.
+    The interative personal cognitive sprarse encoded architecture enhances the
+    computer use demo with self-monitoring, pattern recognition, and adaptive
+    capabilities. This document describes the core components and their
+    interactions.
+  version: 1.0.0
+  contact: {}
+paths:
+  /adaptiveSettings:
+    get:
+      description: >-
+        Retrieve current adaptive settings. These settings are automatically
+        adjusted based on recognized usage patterns and self-monitoring data.
+      parameters:
+        - description: The number of items to return per API request.
+          in: query
+          name: pageSize
+          schema:
+            type: integer
+        - description: >-
+            A page token received from a previous API request, used to request a
+            subsequent page.
+          in: query
+          name: pageToken
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    items:
+                      $ref: '#/components/schemas/AdaptiveSetting'
+                    type: array
+                  nextPageToken:
+                    type: string
+                type: object
+          description: Successful retrieval of adaptive settings.
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid request.
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error.
+      tags:
+        - adaptivesettings
+    put:
+      description: >-
+        Update adaptive settings. Allows modification of parameters influencing
+        the system's adaptive behavior.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              items:
+                $ref: '#/components/schemas/AdaptiveSetting'
+              type: array
+        description: Adaptive settings to update.
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AdaptiveSetting'
+                type: array
+          description: Adaptive settings updated successfully.
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal Server Error
+      tags:
+        - adaptivesettings
+  /cognitiveModels/{cognitiveModelId}:
+    delete:
+      description: >-
+        Delete a specific cognitive model. Removes a cognitive model from the
+        system.
+      operationId: deleteCognitiveModel
+      responses:
+        '204':
+          description: Cognitive model deleted successfully
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Cognitive model not found
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      tags:
+        - cognitivemodels
+    get:
+      description: >-
+        Retrieve details for a specific cognitive model.  Provides information
+        about a particular model used in the sparse encoded architecture.
+      operationId: getCognitiveModelById
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CognitiveModel'
+          description: Successful operation
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Cognitive model not found
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      tags:
+        - cognitivemodels
+    parameters:
+      - description: Unique identifier for the cognitive model.
+        in: path
+        name: cognitiveModelId
+        required: true
+        schema:
+          type: string
+    put:
+      description: >-
+        Update a specific cognitive model. Allows modification of parameters for
+        a specific cognitive model.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CognitiveModel'
+        description: The updated cognitive model details.
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CognitiveModel'
+          description: Successful update of the cognitive model.
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid input
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Cognitive model not found
+      tags:
+        - cognitivemodels
+  /patterns:
+    get:
+      description: >-
+        Retrieve recognized usage patterns. This endpoint returns a list of
+        identified patterns based on the collected self-monitoring data.
+      parameters:
+        - description: The number of items to return per API request.
+          in: query
+          name: pageSize
+          schema:
+            type: integer
+        - description: >-
+            A page token received from a previous API request, used to request a
+            subsequent page.
+          in: query
+          name: pageToken
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    items:
+                      $ref: '#/components/schemas/UsagePattern'
+                    type: array
+                  nextPageToken:
+                    type: string
+                type: object
+          description: A list of usage patterns.
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal Server Error
+      tags:
+        - patterns
+  /selfMonitoringData:
+    get:
+      description: >-
+        Retrieve current self-monitoring data. This includes metrics related to
+        user interaction and system performance.
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SelfMonitoringData'
+          description: Successful retrieval of self-monitoring data.
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid request.
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error.
+      tags:
+        - selfmonitoringdata
+components:
+  schemas:
+    AdaptiveSetting:
+      description: Represents an adaptive setting within the system.
+      properties:
+        description:
+          description: Description of the adaptive setting.
+          type: string
+        settingName:
+          description: Name of the adaptive setting.
+          type: string
+        value:
+          description: Value of the adaptive setting.
+          type: string
+      required:
+        - settingName
+        - value
+      type: object
+    CognitiveModel:
+      description: Represents a cognitive model used in the sparse encoded architecture.
+      properties:
+        cognitiveModelId:
+          description: Unique identifier for the cognitive model.
+          type: string
+        description:
+          description: Description of the cognitive model.
+          type: string
+        modelName:
+          description: Name of the cognitive model.
+          type: string
+        parameters:
+          additionalProperties:
+            description: Parameter value
+            type: string
+          description: Parameters of the cognitive model.
+          type: object
+      required:
+        - cognitiveModelId
+        - modelName
+        - description
+      type: object
+    Error:
+      description: Error object containing code and message.
+      properties:
+        code:
+          description: Error code.
+          type: integer
+        message:
+          description: Error message.
+          type: string
+      required:
+        - code
+        - message
+      type: object
+    SelfMonitoringData:
+      description: >-
+        Current self-monitoring data including metrics related to user
+        interaction and system performance.
+      properties:
+        cpuUsage:
+          description: CPU usage percentage.
+          format: int32
+          type: integer
+        interactionFrequency:
+          description: Frequency of user interactions.
+          format: int32
+          type: integer
+        memoryUsage:
+          description: Memory usage in MB.
+          format: int32
+          type: integer
+        timestamp:
+          description: Timestamp of the data recording.
+          format: date-time
+          type: string
+      type: object
+    UsagePattern:
+      description: Represents a recognized usage pattern.
+      properties:
+        description:
+          description: Description of the usage pattern.
+          type: string
+        frequency:
+          description: Frequency of occurrence of this pattern.
+          format: int32
+          type: integer
+        patternId:
+          description: Unique identifier for the usage pattern.
+          type: string
+      required:
+        - patternId
+        - description
+        - frequency
+      type: object

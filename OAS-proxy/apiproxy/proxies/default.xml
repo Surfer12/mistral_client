@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ProxyEndpoint name="default">
+  <Flows>
+    <Flow>
+      <Description/>
+      <Condition>request.verb = "GET" and request.path MatchesPath "/adaptiveSettings"</Condition>
+    </Flow>
+    <Flow>
+      <Description/>
+      <Condition>request.verb = "PUT" and request.path MatchesPath "/adaptiveSettings"</Condition>
+    </Flow>
+    <Flow name="deleteCognitiveModel">
+      <Description/>
+      <Condition>request.verb = "DELETE" and request.path MatchesPath "/cognitiveModels/*"</Condition>
+    </Flow>
+    <Flow name="getCognitiveModelById">
+      <Description/>
+      <Condition>request.verb = "GET" and request.path MatchesPath "/cognitiveModels/*"</Condition>
+    </Flow>
+    <Flow>
+      <Description/>
+      <Condition>request.verb = "PUT" and request.path MatchesPath "/cognitiveModels/*"</Condition>
+    </Flow>
+    <Flow>
+      <Description/>
+      <Condition>request.verb = "GET" and request.path MatchesPath "/patterns"</Condition>
+    </Flow>
+    <Flow>
+      <Description/>
+      <Condition>request.verb = "GET" and request.path MatchesPath "/selfMonitoringData"</Condition>
+    </Flow>
+    <Flow name="unsupported_operation">
+      <Description>Unsupported operation</Description>
+      <Request>
+        <Step>
+          <Name>RF-unknown-operation</Name>
+        </Step>
+      </Request>
+    </Flow>
+  </Flows>
+  <HTTPProxyConnection>
+    <BasePath>/</BasePath>
+  </HTTPProxyConnection>
+  <RouteRule name="default">
+    <TargetEndpoint>default</TargetEndpoint>
+  </RouteRule>
+</ProxyEndpoint>
