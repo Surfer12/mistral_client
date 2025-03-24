@@ -1,0 +1,18 @@
+# Polyglot System Configuration
+version: 1.0.0
+event_bus:
+  type: distributed
+  max_concurrent_events: 100
+  retry_strategy: exponential_backoff
+languages:
+  - name: python
+    sdk_version: '3.9+'
+  - name: javascript
+    sdk_version: 'es2020+'
+  - name: rust
+    sdk_version: '1.55+'
+deployment:
+  strategy: microservices
+  scaling:
+    min_instances: 2
+    max_instances: 10

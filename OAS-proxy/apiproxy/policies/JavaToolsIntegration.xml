@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<JavaCallout name="JavaToolsIntegration">
+    <ClassName>mcpTools.integration.ApiProxy</ClassName>
+    <ResourceURL>java://mcp-tools-1.0.jar</ResourceURL>
+    <Properties>
+        <Property name="enableLogging">true</Property>
+        <Property name="toolsConfig">
+            {
+                "securityScanning": true,
+                "performanceMonitoring": true,
+                "errorHandling": true
+            }
+        </Property>
+    </Properties>
+</JavaCallout> 

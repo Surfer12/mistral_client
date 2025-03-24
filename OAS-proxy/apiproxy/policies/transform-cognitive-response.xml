@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Javascript name="TransformCognitiveResponse" timeout="2000">
+    <DisplayName>Transform Cognitive Response</DisplayName>
+    <Properties/>
+    <ResourceURL>jsc://transform-cognitive-response.js</ResourceURL>
+    <IncludeURL>jsc://moment.min.js</IncludeURL>
+</Javascript> 

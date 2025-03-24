@@ -6,10 +6,13 @@
         <Name>VerifyAPIKey</Name>
       </Step>
       <Step>
-        <Name>OAuth2-Verification</Name>
+        <Name>SecurityScan</Name>
       </Step>
       <Step>
-        <Name>ValidateOpenAPI</Name>
+        <Name>SpikeArrest</Name>
+      </Step>
+      <Step>
+        <Name>JavaToolsIntegration</Name>
       </Step>
     </Request>
     <Response/>
@@ -18,7 +21,11 @@
     <!-- Adaptive Settings -->
     <Flow name="GetAdaptiveSettings">
       <Description>Retrieve adaptive settings</Description>
-      <Request/>
+      <Request>
+        <Step>
+          <Name>ValidateRequest</Name>
+        </Step>
+      </Request>
       <Response/>
       <Condition>(proxy.pathsuffix MatchesPath "/adaptiveSettings") and (request.verb = "GET")</Condition>
     </Flow>
@@ -26,7 +33,7 @@
       <Description>Update adaptive settings</Description>
       <Request>
         <Step>
-          <Name>ValidateAdaptiveSettingsPayload</Name>
+          <Name>ValidateRequest</Name>
         </Step>
       </Request>
       <Response/>
@@ -36,7 +43,11 @@
     <!-- Cognitive Models -->
     <Flow name="GetCognitiveModel">
       <Description>Get cognitive model by ID</Description>
-      <Request/>
+      <Request>
+        <Step>
+          <Name>ValidateRequest</Name>
+        </Step>
+      </Request>
       <Response/>
       <Condition>(proxy.pathsuffix MatchesPath "/cognitiveModels/*") and (request.verb = "GET")</Condition>
     </Flow>
@@ -72,6 +83,25 @@
       <Response/>
       <Condition>(proxy.pathsuffix MatchesPath "/selfMonitoringData") and (request.verb = "GET")</Condition>
     </Flow>
+    
+    <!-- Cognitive Analysis -->
+    <Flow name="AnalyzeCognitiveData">
+      <Description>Analyze cognitive data using MCP tools</Description>
+      <Request>
+        <Step>
+          <Name>ValidateRequest</Name>
+        </Step>
+        <Step>
+          <Name>analyze-notes-integration</Name>
+        </Step>
+      </Request>
+      <Response>
+        <Step>
+          <Name>TransformResponse</Name>
+        </Step>
+      </Response>
+      <Condition>(proxy.pathsuffix MatchesPath "/cognitive/analyze") and (request.verb = "POST")</Condition>
+    </Flow>
   </Flows>
   <PostFlow name="PostFlow">
     <Request/>
@@ -82,18 +112,42 @@
     </Response>
   </PostFlow>
   <HTTPProxyConnection>
-    <BasePath>/v1/cognitive-api</BasePath>
+    <BasePath>/v1</BasePath>
+    <VirtualHost>default</VirtualHost>
     <VirtualHost>secure</VirtualHost>
   </HTTPProxyConnection>
   <RouteRule name="default">
     <TargetEndpoint>default</TargetEndpoint>
   </RouteRule>
   <FaultRules>
-    <FaultRule name="Security Error">
+    <FaultRule name="DefaultFaultRule">
       <Step>
-        <Name>AssignMessage.SetSecurityError</Name>
+        <Name>RaiseFault</Name>
       </Step>
-      <Condition>(fault.name = "InvalidAccessToken") or (fault.name = "InvalidApiKey")</Condition>
     </FaultRule>
   </FaultRules>
+  <!-- Security Scanning Configuration -->
+  <SecurityConfiguration>
+    <RateLimiting>
+      <Rate>100</Rate>
+      <TimeUnit>minute</TimeUnit>
+    </RateLimiting>
+    <RequestValidation>
+      <ValidateSchema>true</ValidateSchema>
+      <StrictValidation>true</StrictValidation>
+    </RequestValidation>
+  </SecurityConfiguration>
+
+  <!-- Monitoring Configuration -->
+  <MonitoringConfiguration>
+    <Metrics>
+      <ResponseTime/>
+      <ErrorRate/>
+      <RequestCount/>
+    </Metrics>
+    <Logging>
+      <Level>INFO</Level>
+      <Format>json</Format>
+    </Logging>
+  </MonitoringConfiguration>
 </ProxyEndpoint>

@@ -1,0 +1,41 @@
+{
+  "folders": [
+	{
+		"path": "/Users/ryanoatespro/mistral_client"
+	},
+	{
+		"path": "/Users/ryanoatespro/Library/Mobile Documents/com~apple~CloudDocs/analysis-of-prompts-v0.2"
+	},
+	{
+		"path": "/Users/ryanoatespro/Library/Mobile Documents/com~apple~CloudDocs/anthropic-sdk-java-main-test-main"
+	},
+	{
+		"path": "/Users/ryanoatespro/Library/Mobile Documents/com~apple~CloudDocs/ClaudeMetaResearch"
+	},
+	{
+		"path": "/Users/ryanoatespro/Library/Mobile Documents/com~apple~CloudDocs/code-sentinel-demo"
+	},
+	{
+		"path": "/Users/ryanoatespro/Library/Mobile Documents/com~apple~CloudDocs/java-sdk-main-mcp-protocol"
+	},
+	{
+		"path": "/Users/ryanoatespro/Library/Mobile Documents/com~apple~CloudDocs/mcpToolsJavaforCursor-main"
+	},
+	{
+		"path": "/Users/ryanoatespro/Library/Mobile Documents/com~apple~CloudDocs/notes-aggregated-main"
+	},
+	{
+		"name": "OAS-proxy",
+		"path": "/Users/ryanoatespro/mistral_client/OAS-proxy"
+	},
+	{
+		"path": "../system-prompt-march2025"
+	},
+	{
+		"path": "../Desktop/rcct"
+	}
+],
+  "settings": {
+    "cloudcode.workspace.type": "apigee"
+  }
+}

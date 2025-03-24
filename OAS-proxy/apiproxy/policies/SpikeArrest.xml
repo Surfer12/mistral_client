@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<SpikeArrest name="SpikeArrest">
+    <Rate>30ps</Rate>
+</SpikeArrest> 

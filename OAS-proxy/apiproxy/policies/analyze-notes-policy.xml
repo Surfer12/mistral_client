@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<JavaCallout name="analyze-notes-integration">
+    <DisplayName>Analyze Notes Integration</DisplayName>
+    <Properties>
+        <Property name="scriptFile">analyze_notes.mojo</Property>
+        <Property name="timeoutMs">5000</Property>
+        <Property name="mcpToolClass">mcpTools.CCTTool</Property>
+        <Property name="mcpModelClass">mcpTools.models.CCTModel</Property>
+        <Property name="thoughtNodeClass">mcpTools.models.ThoughtNode</Property>
+        <Property name="enableConcurrent">true</Property>
+        <Property name="cacheEnabled">true</Property>
+        <Property name="maxNodes">1000</Property>
+    </Properties>
+    <ClassName>com.example.AnalyzeNotesIntegration</ClassName>
+    <ResourceURL>java://analyze-notes-integration.jar</ResourceURL>
+    <IncludeURL>java://mcp-tools.jar</IncludeURL>
+</JavaCallout> 

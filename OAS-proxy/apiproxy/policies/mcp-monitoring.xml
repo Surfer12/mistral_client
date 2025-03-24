@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<StatisticsCollector name="MCPToolsMonitoring">
+    <DisplayName>MCP Tools Monitoring</DisplayName>
+    <Properties/>
+    <Statistics>
+        <!-- Performance Metrics -->
+        <Statistic name="mcp_execution_time" ref="target.response.time" type="Integer">
+            <Name>MCP Execution Time</Name>
+        </Statistic>
+        <Statistic name="mcp_cache_hits" ref="mcptools.cache.hits" type="Integer">
+            <Name>MCP Cache Hits</Name>
+        </Statistic>
+        <Statistic name="mcp_nodes_processed" ref="mcptools.nodes.processed" type="Integer">
+            <Name>MCP Nodes Processed</Name>
+        </Statistic>
+        
+        <!-- Error Metrics -->
+        <Statistic name="mcp_errors" ref="mcptools.error.count" type="Integer">
+            <Name>MCP Error Count</Name>
+        </Statistic>
+        <Statistic name="mcp_timeout_errors" ref="mcptools.timeout.count" type="Integer">
+            <Name>MCP Timeout Count</Name>
+        </Statistic>
+        
+        <!-- Resource Metrics -->
+        <Statistic name="mcp_memory_usage" ref="mcptools.memory.used" type="Integer">
+            <Name>MCP Memory Usage</Name>
+        </Statistic>
+        <Statistic name="mcp_thread_count" ref="mcptools.threads.active" type="Integer">
+            <Name>MCP Active Threads</Name>
+        </Statistic>
+    </Statistics>
+</StatisticsCollector> 

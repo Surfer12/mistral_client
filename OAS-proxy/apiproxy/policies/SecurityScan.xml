@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Javascript name="SecurityScan" timeLimit="500">
+    <ResourceURL>jsc://security-scan.js</ResourceURL>
+    <IncludeURL>jsc://code-sentinel-utils.js</IncludeURL>
+    <Properties>
+        <Property name="scanType">vulnerability</Property>
+        <Property name="securityLevel">high</Property>
+        <Property name="enableAutoFix">false</Property>
+    </Properties>
+</Javascript> 

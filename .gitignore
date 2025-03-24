@@ -3,3 +3,10 @@
 
 # Ignore Gradle build output directory
 build
+
+# pixi environments
+.pixi
+*.egg-info
+# magic environments
+.magic
+.env

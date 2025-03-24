@@ -1,12 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<VerifyAPIKey name="VerifyAPIKey" continueOnError="false" enabled="true" async="false">
+<VerifyAPIKey name="VerifyAPIKey">
     <APIKey ref="request.header.x-api-key"/>
-    <FaultRules>
-        <FaultRule name="Invalid API Key">
-            <Step>
-                <Name>AssignMessage.SetInvalidApiKeyError</Name>
-            </Step>
-            <Condition>fault.name = "InvalidApiKey"</Condition>
-        </FaultRule>
-    </FaultRules>
 </VerifyAPIKey> 
