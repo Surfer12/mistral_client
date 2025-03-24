@@ -5,6 +5,8 @@ cognitive_framework = {
             transitions = "fluid and context-aware"
         },
         creative_synthesis = {
+
+
             modes = {"linear", "lateral", "recursive"},
             integration = "continuous and adaptive"
         },
