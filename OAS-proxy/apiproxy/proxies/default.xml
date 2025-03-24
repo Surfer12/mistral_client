@@ -1,47 +1,99 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ProxyEndpoint name="default">
+  <PreFlow name="PreFlow">
+    <Request>
+      <Step>
+        <Name>VerifyAPIKey</Name>
+      </Step>
+      <Step>
+        <Name>OAuth2-Verification</Name>
+      </Step>
+      <Step>
+        <Name>ValidateOpenAPI</Name>
+      </Step>
+    </Request>
+    <Response/>
+  </PreFlow>
   <Flows>
-    <Flow>
-      <Description/>
-      <Condition>request.verb = "GET" and request.path MatchesPath "/adaptiveSettings"</Condition>
+    <!-- Adaptive Settings -->
+    <Flow name="GetAdaptiveSettings">
+      <Description>Retrieve adaptive settings</Description>
+      <Request/>
+      <Response/>
+      <Condition>(proxy.pathsuffix MatchesPath "/adaptiveSettings") and (request.verb = "GET")</Condition>
     </Flow>
-    <Flow>
-      <Description/>
-      <Condition>request.verb = "PUT" and request.path MatchesPath "/adaptiveSettings"</Condition>
-    </Flow>
-    <Flow name="deleteCognitiveModel">
-      <Description/>
-      <Condition>request.verb = "DELETE" and request.path MatchesPath "/cognitiveModels/*"</Condition>
-    </Flow>
-    <Flow name="getCognitiveModelById">
-      <Description/>
-      <Condition>request.verb = "GET" and request.path MatchesPath "/cognitiveModels/*"</Condition>
-    </Flow>
-    <Flow>
-      <Description/>
-      <Condition>request.verb = "PUT" and request.path MatchesPath "/cognitiveModels/*"</Condition>
-    </Flow>
-    <Flow>
-      <Description/>
-      <Condition>request.verb = "GET" and request.path MatchesPath "/patterns"</Condition>
-    </Flow>
-    <Flow>
-      <Description/>
-      <Condition>request.verb = "GET" and request.path MatchesPath "/selfMonitoringData"</Condition>
-    </Flow>
-    <Flow name="unsupported_operation">
-      <Description>Unsupported operation</Description>
+    <Flow name="UpdateAdaptiveSettings">
+      <Description>Update adaptive settings</Description>
       <Request>
         <Step>
-          <Name>RF-unknown-operation</Name>
+          <Name>ValidateAdaptiveSettingsPayload</Name>
         </Step>
       </Request>
+      <Response/>
+      <Condition>(proxy.pathsuffix MatchesPath "/adaptiveSettings") and (request.verb = "PUT")</Condition>
+    </Flow>
+    
+    <!-- Cognitive Models -->
+    <Flow name="GetCognitiveModel">
+      <Description>Get cognitive model by ID</Description>
+      <Request/>
+      <Response/>
+      <Condition>(proxy.pathsuffix MatchesPath "/cognitiveModels/*") and (request.verb = "GET")</Condition>
+    </Flow>
+    <Flow name="UpdateCognitiveModel">
+      <Description>Update cognitive model</Description>
+      <Request>
+        <Step>
+          <Name>ValidateCognitiveModelPayload</Name>
+        </Step>
+      </Request>
+      <Response/>
+      <Condition>(proxy.pathsuffix MatchesPath "/cognitiveModels/*") and (request.verb = "PUT")</Condition>
+    </Flow>
+    <Flow name="DeleteCognitiveModel">
+      <Description>Delete cognitive model</Description>
+      <Request/>
+      <Response/>
+      <Condition>(proxy.pathsuffix MatchesPath "/cognitiveModels/*") and (request.verb = "DELETE")</Condition>
+    </Flow>
+    
+    <!-- Patterns -->
+    <Flow name="GetPatterns">
+      <Description>Retrieve usage patterns</Description>
+      <Request/>
+      <Response/>
+      <Condition>(proxy.pathsuffix MatchesPath "/patterns") and (request.verb = "GET")</Condition>
+    </Flow>
+    
+    <!-- Self-Monitoring Data -->
+    <Flow name="GetSelfMonitoringData">
+      <Description>Retrieve self-monitoring data</Description>
+      <Request/>
+      <Response/>
+      <Condition>(proxy.pathsuffix MatchesPath "/selfMonitoringData") and (request.verb = "GET")</Condition>
     </Flow>
   </Flows>
+  <PostFlow name="PostFlow">
+    <Request/>
+    <Response>
+      <Step>
+        <Name>RemoveSensitiveHeaders</Name>
+      </Step>
+    </Response>
+  </PostFlow>
   <HTTPProxyConnection>
-    <BasePath>/</BasePath>
+    <BasePath>/v1/cognitive-api</BasePath>
+    <VirtualHost>secure</VirtualHost>
   </HTTPProxyConnection>
   <RouteRule name="default">
     <TargetEndpoint>default</TargetEndpoint>
   </RouteRule>
+  <FaultRules>
+    <FaultRule name="Security Error">
+      <Step>
+        <Name>AssignMessage.SetSecurityError</Name>
+      </Step>
+      <Condition>(fault.name = "InvalidAccessToken") or (fault.name = "InvalidApiKey")</Condition>
+    </FaultRule>
+  </FaultRules>
 </ProxyEndpoint>

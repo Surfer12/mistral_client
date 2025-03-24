@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<OpenAPIValidation name="ValidateOpenAPI" continueOnError="false" enabled="true" async="false">
+    <Source>request</Source>
+    <SpecUrl>cognitive-api-spec.yaml</SpecUrl>
+    <ValidateRequest>true</ValidateRequest>
+    <ValidateResponse>true</ValidateResponse>
+    <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>
+</OpenAPIValidation> 

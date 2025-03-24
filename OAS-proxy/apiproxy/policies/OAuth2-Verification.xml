@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<OAuthV2 name="OAuth2-Verification" continueOnError="false" enabled="true" async="false">
+    <Operation>VerifyAccessToken</Operation>
+    <Scope>read write</Scope>
+    <ExpiresIn>3600000</ExpiresIn>
+    <GenerateResponse enabled="true"/>
+    <ReuseRefreshToken>true</ReuseRefreshToken>
+    <SupportedGrantTypes>
+        <GrantType>client_credentials</GrantType>
+        <GrantType>authorization_code</GrantType>
+        <GrantType>refresh_token</GrantType>
+    </SupportedGrantTypes>
+    <GenerateErrorResponse enabled="true"/>
+</OAuthV2> 

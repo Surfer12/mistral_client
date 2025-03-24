@@ -27,9 +27,6 @@
 	{
 		"name": "OAS-proxy",
 		"path": "/Users/ryanoatespro/mistral_client/OAS-proxy"
-	},
-	{
-		"path": "../ClaudeMetaResearch"
 	}
 ],
   "settings": {
