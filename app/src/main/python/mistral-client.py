@@ -9,7 +9,7 @@ api_key = os.environ["MISTRAL_API_KEY"]
 client = Mistral(api_key=api_key)
 
 chat_response = client.agents.complete(
-    agent_id="",
+    agent_id="PLACEHOLDER_AGENT_ID",  # Replace with a valid agent_id
     messages=[
         {
             "role": "user",
