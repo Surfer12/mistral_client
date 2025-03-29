@@ -10,3 +10,5 @@ build
 # magic environments
 .magic
 .env
+.env.local
+app/src/main/java/mistral_client/perplexitylabs/sonarpro.json

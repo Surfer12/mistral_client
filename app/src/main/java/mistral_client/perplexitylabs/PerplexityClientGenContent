@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PerplexityClientGenContent {
-    private static final String PERPLEXITY_API_KEY = "INSERT API KEY HERE";
+    private static final String PERPLEXITY_API_KEY = System.getenv("PERPLEXITY_API_KEY");
     private static final String BASE_URL = "https://api.perplexity.ai";
     
     public static void main(String[] args) {
