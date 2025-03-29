@@ -12,3 +12,4 @@ build
 .env
 .env.local
 app/src/main/java/mistral_client/perplexitylabs/sonarpro.json
+app/src/main/java/mistral_client/perplexitylabs/<html>.html

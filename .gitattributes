@@ -7,7 +7,6 @@
 # These are Windows script files and should use crlf
 *.bat           text eol=crlf
 
-# SCM syntax highlighting & preventing 3-way merges
-pixi.lock merge=binary linguist-language=YAML linguist-generated=true
+# Binary files should be left untouched
+*.jar           binary
 
-magic.lock merge=binary linguist-language=YAML linguist-generated=true
