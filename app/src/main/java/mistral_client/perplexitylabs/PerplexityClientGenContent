@@ -1,0 +1,44 @@
+package mistral_client.perplexitylabs;
+
+import requests
+import os
+import openai
+from dotenv import load_dotenv
+
+load_dotenv()
+
+
+
+load_dotenv()
+import java.util.ArrayList;
+import java.util.List;
+
+public class PerplexityClientGenContent {
+    private static final String PERPLEXITY_API_KEY = "INSERT API KEY HERE";
+    private static final String BASE_URL = "https://api.perplexity.ai";
+    
+    public static void main(String[] args) {
+        List<ChatMessage> messages = new ArrayList<>();
+        messages.add(new ChatMessage("system", 
+            "You are an artificial intelligence assistant and you need to " +
+            "engage in a helpful, detailed, polite conversation with a user."));
+        messages.add(new ChatMessage("user",
+            "How many stars are in the universe?"));
+
+        OpenAiService client = new OpenAiService(PERPLEXITY_API_KEY, https://api.perplexity.ai);
+
+        // Chat completion without streaming
+        ChatCompletionRequest request = ChatCompletionRequest.builder()
+            .model("sonar-pro")
+            .messages(messages)
+            .build();
+            
+        ChatCompletionResult response = client.createChatCompletion(request);
+        System.out.println(response);
+
+        // Chat completion with streaming
+        client.streamChatCompletion(request)
+            .doOnNext(chunk -> System.out.println(chunk))
+            .blockLast();
+    }
+}
