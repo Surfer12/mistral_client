@@ -2,12 +2,16 @@ package com.uplift.system.adapters;
 
 import com.uplift.system.events.DomainAwareEventBus.Domain;
 import com.uplift.system.config.SystemConfig;
+import org.jetbrains.annotations.NotNull;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.Optional;
 
 /**
- * Adapter for the Representational domain focusing on YAML-like structures and symbolic references
+ * Adapter for the Representational domain focusing on YAML-like structures and symbolic references.
+ * This adapter handles the transformation and management of hierarchical data structures with
+ * support for anchors, aliases, and reference resolution.
  */
 public class RepresentationalDomainAdapter implements DomainAwareAdapter {
     private final SystemConfig config;
@@ -15,8 +19,14 @@ public class RepresentationalDomainAdapter implements DomainAwareAdapter {
     private final Map<String, Object> anchorRegistry;
     private final Map<String, List<String>> referenceGraph;
 
-    public RepresentationalDomainAdapter(SystemConfig config) {
-        this.config = config;
+    /**
+     * Constructs a new RepresentationalDomainAdapter with the specified configuration.
+     *
+     * @param config The system configuration containing representational domain settings
+     * @throws IllegalArgumentException if config is null
+     */
+    public RepresentationalDomainAdapter(@NotNull SystemConfig config) {
+        this.config = Objects.requireNonNull(config, "Config must not be null");
         this.metrics = new ConcurrentHashMap<>();
         this.anchorRegistry = new ConcurrentHashMap<>();
         this.referenceGraph = new ConcurrentHashMap<>();
@@ -31,12 +41,18 @@ public class RepresentationalDomainAdapter implements DomainAwareAdapter {
     }
 
     @Override
+    @NotNull
     public Set<Domain> getSupportedDomains() {
         return EnumSet.of(Domain.REPRESENTATIONAL, Domain.COMPUTATIONAL, Domain.COGNITIVE);
     }
 
     @Override
-    public Object transformBetweenDomains(Object entity, Domain sourceDomain, Domain targetDomain) {
+    @NotNull
+    public Object transformBetweenDomains(@NotNull Object entity, @NotNull Domain sourceDomain, @NotNull Domain targetDomain) {
+        Objects.requireNonNull(entity, "Entity must not be null");
+        Objects.requireNonNull(sourceDomain, "Source domain must not be null");
+        Objects.requireNonNull(targetDomain, "Target domain must not be null");
+        
         metrics.get("structureTransformations").incrementAndGet();
         
         if (sourceDomain == Domain.REPRESENTATIONAL) {
@@ -48,7 +64,14 @@ public class RepresentationalDomainAdapter implements DomainAwareAdapter {
         throw new UnsupportedOperationException("Unsupported domain transformation");
     }
 
-    private Object transformToRepresentational(Object entity, Domain sourceDomain) {
+    /**
+     * Creates a YAML-like structure with anchors and references from a source entity.
+     *
+     * @param entity The source entity to transform
+     * @param sourceDomain The domain of the source entity
+     * @return A Map containing the YAML structure with anchors and references
+     */
+    private Object transformToRepresentational(@NotNull Object entity, @NotNull Domain sourceDomain) {
         Map<String, Object> yamlStructure = new HashMap<>();
         
         // Create YAML-like structure with anchors and references
@@ -59,7 +82,99 @@ public class RepresentationalDomainAdapter implements DomainAwareAdapter {
         // Register anchors for future reference resolution
         registerAnchors(yamlStructure);
         
+        // Calculate and update compression metrics
+        updateCompressionMetrics(entity, yamlStructure);
+        
         return yamlStructure;
+    }
+
+    /**
+     * Updates compression metrics based on original and transformed structures.
+     */
+    private void updateCompressionMetrics(@NotNull Object original, @NotNull Map<String, Object> transformed) {
+        int originalSize = calculateStructureSize(original);
+        int transformedSize = calculateStructureSize(transformed.get("structure"));
+        
+        if (originalSize > 0) {
+            double ratio = (double) transformedSize / originalSize;
+            metrics.get("compressionRatio").set((long) (ratio * 100));
+        }
+    }
+
+    /**
+     * Calculates the size of a structure recursively.
+     */
+    private int calculateStructureSize(@NotNull Object structure) {
+        if (structure instanceof Map) {
+            Map<?, ?> map = (Map<?, ?>) structure;
+            return map.entrySet().stream()
+                .mapToInt(entry -> calculateStructureSize(entry.getKey()) + calculateStructureSize(entry.getValue()))
+                .sum();
+        } else if (structure instanceof Collection) {
+            Collection<?> collection = (Collection<?>) structure;
+            return collection.stream()
+                .mapToInt(this::calculateStructureSize)
+                .sum();
+        }
+        return 1;
+    }
+
+    /**
+     * Creates the main structure of the YAML representation, identifying potential anchors.
+     *
+     * @param entity The source entity to structure
+     * @return A Map containing the structured representation
+     */
+    private Map<String, Object> createStructure(@NotNull Object entity) {
+        Map<String, Object> structure = new HashMap<>();
+        
+        if (entity instanceof Map) {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> sourceMap = (Map<String, Object>) entity;
+            
+            // Create hierarchical structure with anchor detection
+            sourceMap.forEach((key, value) -> {
+                if (isAnchorCandidate(value)) {
+                    String anchor = createAnchor(key, value);
+                    structure.put(key, Map.of("&" + anchor, value));
+                    metrics.get("anchorDefinitions").incrementAndGet();
+                } else {
+                    structure.put(key, value);
+                }
+            });
+        }
+        
+        return structure;
+    }
+
+    /**
+     * Determines if a value should be considered as an anchor candidate.
+     * Values are considered anchor candidates if they are complex objects
+     * that might be referenced multiple times.
+     *
+     * @param value The value to check
+     * @return true if the value should be an anchor
+     */
+    private boolean isAnchorCandidate(@NotNull Object value) {
+        if (value instanceof Map) {
+            return ((Map<?, ?>) value).size() > 2;
+        } else if (value instanceof Collection) {
+            return ((Collection<?>) value).size() > 2;
+        }
+        return false;
+    }
+
+    /**
+     * Creates a unique anchor identifier for a given key-value pair.
+     *
+     * @param key The key associated with the value
+     * @param value The value to create an anchor for
+     * @return A unique anchor identifier
+     */
+    private String createAnchor(@NotNull String key, @NotNull Object value) {
+        String baseAnchor = key.replaceAll("[^a-zA-Z0-9]", "_");
+        String valueHash = String.valueOf(Objects.hash(value));
+        return baseAnchor + "_" + valueHash;
     }
 
     private Object transformFromRepresentational(Object entity, Domain targetDomain) {
@@ -166,27 +281,6 @@ public class RepresentationalDomainAdapter implements DomainAwareAdapter {
     }
 
     // Helper methods for YAML processing
-    private Map<String, Object> createStructure(Object entity) {
-        Map<String, Object> structure = new HashMap<>();
-        
-        if (entity instanceof Map) {
-            @SuppressWarnings("unchecked")
-            Map<String, Object> sourceMap = (Map<String, Object>) entity;
-            
-            // Create hierarchical structure
-            sourceMap.forEach((key, value) -> {
-                if (isAnchorCandidate(value)) {
-                    String anchor = createAnchor(key, value);
-                    structure.put(key, Map.of("&" + anchor, value));
-                } else {
-                    structure.put(key, value);
-                }
-            });
-        }
-        
-        return structure;
-    }
-
     private Map<String, Object> defineAnchors(Object entity) {
         Map<String, Object> anchors = new HashMap<>();
         
@@ -348,15 +442,6 @@ public class RepresentationalDomainAdapter implements DomainAwareAdapter {
     }
 
     // Private utility methods
-    private boolean isAnchorCandidate(Object value) {
-        return value instanceof Map || value instanceof List || 
-               (value instanceof String && ((String) value).length() > 100);
-    }
-
-    private String createAnchor(String key, Object value) {
-        return key.replaceAll("[^a-zA-Z0-9]", "_") + "_" + Math.abs(value.hashCode());
-    }
-
     private boolean hasReference(Object value) {
         return value instanceof Map && ((Map<?, ?>) value).containsKey("&");
     }

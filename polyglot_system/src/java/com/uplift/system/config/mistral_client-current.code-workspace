@@ -1,0 +1,15 @@
+{
+	"folders": [
+		{
+			"path": "../../../../../../.."
+		},
+		{
+			"name": "mistral-inference",
+			"path": "../../../../../../../../mistral-inference"
+		},
+		{
+			"path": "../../../../../../../../ClaudeMetaResearch"
+		}
+	],
+	"settings": {}
+}
