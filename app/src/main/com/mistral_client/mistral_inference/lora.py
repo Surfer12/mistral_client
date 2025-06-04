@@ -4,9 +4,9 @@ from pathlib import Path
 from typing import Any, Dict, NamedTuple, Union
 
 import safetensors.torch
-import torch
-import torch.nn as nn
+import nn as nn
 from simple_parsing.helpers import Serializable
+from torch import Tensor, zeros_like
 
 
 @dataclass
@@ -68,9 +68,9 @@ class LoRALinear(nn.Module):
 
         self.register_load_state_dict_post_hook(ignore_missing_keys)
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, x: Tensor) -> Tensor:
         lora = self.lora_B(self.lora_A(x))
-        result: torch.Tensor = self.linear(x) + lora * self.scaling
+        result: Tensor = self.linear(x) + lora * self.scaling
         return result
 
     def _load_from_state_dict(self, state_dict: Dict[str, Any], prefix: str, *args, **kwargs) -> None:  # type: ignore[no-untyped-def]
@@ -83,8 +83,8 @@ class LoRALinear(nn.Module):
             # load frozen weights
             state_dict = {
                 "linear.weight": w_ref,
-                "lora_A.weight": torch.zeros_like(self.lora_A.weight, device=w_ref.device, dtype=w_ref.dtype),
-                "lora_B.weight": torch.zeros_like(self.lora_B.weight, device=w_ref.device, dtype=w_ref.dtype),
+                "lora_A.weight": zeros_like(self.lora_A.weight, device=w_ref.device, dtype=w_ref.dtype),
+                "lora_B.weight": zeros_like(self.lora_B.weight, device=w_ref.device, dtype=w_ref.dtype),
             }
             self.load_state_dict(state_dict, assign=True, strict=True)
 
@@ -96,11 +96,11 @@ class LoRALoaderMixin:
         lora_path = Path(lora_path)
         assert lora_path.is_file(), f"{lora_path} does not exist or is not a file"
 
-        state_dict = safetensors.torch.load_file(lora_path)
+        state_dict = safetensors.load_file(lora_path)
 
         self._load_lora_state_dict(state_dict, scaling=scaling)
 
-    def _load_lora_state_dict(self, lora_state_dict: Dict[str, torch.Tensor], scaling: float = 2.0) -> None:
+    def _load_lora_state_dict(self, lora_state_dict: Dict[str, Tensor], scaling: float = 2.0) -> None:
         """Loads LoRA state_dict"""
         lora_dtypes = set([p.dtype for p in lora_state_dict.values()])
         assert (

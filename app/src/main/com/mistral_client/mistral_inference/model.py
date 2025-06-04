@@ -2,10 +2,10 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import List, Optional, Union
 
-import torch
-import torch.nn as nn
+import nn as nn
 
 from mistral_inference.cache import BufferCache
+from torch import Tensor, device, dtype
 
 
 class ModelBase(nn.Module, ABC):
@@ -14,21 +14,21 @@ class ModelBase(nn.Module, ABC):
 
     @property
     @abstractmethod
-    def dtype(self) -> torch.dtype:
+    def dtype(self) -> dtype:
         pass
 
     @property
     @abstractmethod
-    def device(self) -> torch.device:
+    def device(self) -> device:
         pass
 
     @abstractmethod
     def forward(
         self,
-        input_ids: torch.Tensor,
+        input_ids: Tensor,
         seqlens: List[int],  # not supported for now
         cache: Optional[BufferCache] = None,  # not supported for now
-    ) -> torch.Tensor:
+    ) -> Tensor:
         pass
 
     @staticmethod
@@ -37,7 +37,7 @@ class ModelBase(nn.Module, ABC):
         folder: Union[Path, str],
         max_batch_size: int = 1,
         num_pipeline_ranks: int = 1,
-        device: Union[torch.device, str] = "cuda",
-        dtype: Optional[torch.dtype] = None,
+        device: Union[device, str] = "cuda",
+        dtype: Optional[dtype] = None,
     ) -> "ModelBase":
         pass

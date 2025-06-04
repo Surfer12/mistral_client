@@ -3,8 +3,7 @@ from pathlib import Path
 from typing import List, Optional, Union
 
 import safetensors
-import torch
-import torch.nn as nn
+import nn as nn
 
 from mistral_inference.args import MambaArgs
 from mistral_inference.cache import BufferCache
@@ -14,6 +13,7 @@ _is_mamba_installed = False
 try:
     from mamba_ssm.models.config_mamba import MambaConfig
     from mamba_ssm.models.mixer_seq_simple import MambaLMHeadModel
+from torch import Tensor, device, dtype
 
     _is_mamba_installed = True
 except ImportError:
@@ -43,21 +43,21 @@ class Mamba(ModelBase, nn.Module):
         self.model = MambaLMHeadModel(config)
 
     @property
-    def dtype(self) -> torch.dtype:
+    def dtype(self) -> dtype:
         return next(self.parameters()).dtype
 
     @property
-    def device(self) -> torch.device:
+    def device(self) -> device:
         return next(self.parameters()).device
 
     def forward(
         self,
-        input_ids: torch.Tensor,
+        input_ids: Tensor,
         seqlens: List[int],  # not supported for now
         cache: Optional[BufferCache] = None,  # not supported for now
-    ) -> torch.Tensor:
+    ) -> Tensor:
         lm_output = self.model(input_ids)
-        result: torch.Tensor = lm_output.logits
+        result: Tensor = lm_output.logits
         return result
 
     @staticmethod
@@ -65,19 +65,19 @@ class Mamba(ModelBase, nn.Module):
         folder: Union[Path, str],
         max_batch_size: int = 1,
         num_pipeline_ranks: int = 1,
-        device: Union[torch.device, str] = "cuda",
-        dtype: Optional[torch.dtype] = None,
+        device: Union[device, str] = "cuda",
+        dtype: Optional[dtype] = None,
     ) -> "Mamba":
         with open(Path(folder) / "params.json", "r") as f:
             model_args = MambaArgs.from_dict(json.load(f))
 
-        with torch.device("meta"):
+        with device("meta"):
             model = Mamba(model_args)
 
         model_file = Path(folder) / "consolidated.safetensors"
 
         assert model_file.exists(), f"Make sure {model_file} exists."
-        loaded = safetensors.torch.load_file(str(model_file))
+        loaded = safetensors.load_file(str(model_file))
 
         model.load_state_dict(loaded, assign=True, strict=True)
         return model.to(device=device, dtype=dtype)

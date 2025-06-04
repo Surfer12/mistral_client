@@ -1,23 +1,23 @@
 from typing import List, Optional
 
-import torch
-import torch.nn as nn
+import nn as nn
 from xformers.ops.fmha.attn_bias import BlockDiagonalMask
 
 from mistral_inference.args import VisionEncoderArgs
 from mistral_inference.rope import precompute_freqs_cis_2d
 from mistral_inference.transformer_layers import RMSNorm, TransformerBlock
+from torch import Tensor, arange, cat, device, meshgrid, stack
 
 
 def position_meshgrid(
-    patch_embeds_list: list[torch.Tensor],
-) -> torch.Tensor:
-    positions = torch.cat(
+    patch_embeds_list: list[Tensor],
+) -> Tensor:
+    positions = cat(
         [
-            torch.stack(
-                torch.meshgrid(
-                    torch.arange(p.shape[-2]),
-                    torch.arange(p.shape[-1]),
+            stack(
+                meshgrid(
+                    arange(p.shape[-2]),
+                    arange(p.shape[-1]),
                     indexing="ij",
                 ),
                 dim=-1,
@@ -44,18 +44,18 @@ class VisionTransformer(nn.Module):
 
         head_dim = self.args.hidden_size // self.args.num_attention_heads
         assert head_dim % 2 == 0, "ROPE requires even head_dim"
-        self._freqs_cis: Optional[torch.Tensor] = None
+        self._freqs_cis: Optional[Tensor] = None
 
     @property
     def max_patches_per_side(self) -> int:
         return self.args.image_size // self.args.patch_size
 
     @property
-    def device(self) -> torch.device:
+    def device(self) -> device:
         return next(self.parameters()).device
 
     @property
-    def freqs_cis(self) -> torch.Tensor:
+    def freqs_cis(self) -> Tensor:
         if self._freqs_cis is None:
             self._freqs_cis = precompute_freqs_cis_2d(
                 dim=self.args.hidden_size // self.args.num_attention_heads,
@@ -71,8 +71,8 @@ class VisionTransformer(nn.Module):
 
     def forward(
         self,
-        images: List[torch.Tensor],
-    ) -> torch.Tensor:
+        images: List[Tensor],
+    ) -> Tensor:
         """
         Args:
             images: list of N_img images of variable sizes, each of shape (C, H, W)
@@ -85,7 +85,7 @@ class VisionTransformer(nn.Module):
         patch_embeds_list = [self.patch_conv(img.unsqueeze(0)).squeeze(0) for img in images]
 
         # flatten to a single sequence
-        patch_embeds = torch.cat([p.flatten(1).permute(1, 0) for p in patch_embeds_list], dim=0)
+        patch_embeds = cat([p.flatten(1).permute(1, 0) for p in patch_embeds_list], dim=0)
         patch_embeds = self.ln_pre(patch_embeds)
 
         # positional embeddings
@@ -113,14 +113,14 @@ class VisionLanguageAdapter(nn.Module):
         self.gelu = nn.GELU()
         self.w_out = nn.Linear(out_dim, out_dim, bias=bias)
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, x: Tensor) -> Tensor:
         return self.w_out(self.gelu(self.w_in(x)))  # type: ignore[no-any-return]
 
 
 class VisionTransformerBlocks(nn.Module):
     def __init__(self, args: VisionEncoderArgs):
         super().__init__()
-        self.layers = torch.nn.ModuleList()
+        self.layers = nn.ModuleList()
         for _ in range(args.num_hidden_layers):
             self.layers.append(
                 TransformerBlock(
@@ -135,10 +135,10 @@ class VisionTransformerBlocks(nn.Module):
 
     def forward(
         self,
-        x: torch.Tensor,
+        x: Tensor,
         mask: BlockDiagonalMask,
-        freqs_cis: Optional[torch.Tensor],
-    ) -> torch.Tensor:
+        freqs_cis: Optional[Tensor],
+    ) -> Tensor:
         for layer in self.layers:
             x = layer(x, mask=mask, freqs_cis=freqs_cis)
         return x
@@ -163,7 +163,7 @@ class PatchMerger(nn.Module):
 
         self.merging_layer = nn.Linear(mlp_input_dim, vision_encoder_dim, bias=False)
 
-    def forward(self, x: torch.Tensor, image_sizes: list[tuple[int, int]]) -> torch.Tensor:
+    def forward(self, x: Tensor, image_sizes: list[tuple[int, int]]) -> Tensor:
         # image_sizes specified in tokens
         assert sum([h * w for h, w in image_sizes]) == len(x), f"{sum([h * w for h, w in image_sizes])} != {len(x)}"
 
@@ -179,9 +179,9 @@ class PatchMerger(nn.Module):
 
     def permute(
         self,
-        x: torch.Tensor,
+        x: Tensor,
         image_sizes: list[tuple[int, int]],
-    ) -> torch.Tensor:
+    ) -> Tensor:
         """
         Args:
             x: (N, D) where N is flattened and concatenated patch tokens
@@ -200,25 +200,25 @@ class PatchMerger(nn.Module):
         permuted_tensor = [
             grid.view(-1, grid.shape[-1]).t() for grid in sub_grids
         ]  # n_patches x d * sub_grid_size * sub_grid_size
-        return torch.cat(permuted_tensor, dim=0)  # (N / spatial_merge_size ** 2, d * spatial_merge_size ** 2)
+        return cat(permuted_tensor, dim=0)  # (N / spatial_merge_size ** 2, d * spatial_merge_size ** 2)
 
 
 def get_sub_grids(
-    x: torch.Tensor,
+    x: Tensor,
     image_sizes: list[tuple[int, int]],
     spatial_merge_size: int,
-) -> list[torch.Tensor]:
+) -> list[Tensor]:
     # image_sizes specified in tokens
     tokens_per_image = [h * w for h, w in image_sizes]
     d = x.shape[-1]
-    all_img_sub_grids: list[torch.Tensor] = []
+    all_img_sub_grids: list[Tensor] = []
     sub_grid_size = spatial_merge_size
 
     for image_index, image_tokens in enumerate(x.split(tokens_per_image)):
         # Reshape image_tokens into a 2D grid
         h, w = image_sizes[image_index]
         image_grid = image_tokens.view(h, w, d).permute(2, 0, 1)[None, :, :, :]  # 1 x d x h x w
-        sub_grids = torch.nn.functional.unfold(image_grid, kernel_size=sub_grid_size, stride=sub_grid_size)
+        sub_grids = nn.functional.unfold(image_grid, kernel_size=sub_grid_size, stride=sub_grid_size)
         sub_grids = sub_grids.view(
             1, d, sub_grid_size, sub_grid_size, -1
         )  # 1 x d x sub_grid_size x sub_grid_size x n_patches

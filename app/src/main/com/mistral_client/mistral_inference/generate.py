@@ -1,14 +1,14 @@
 from typing import List, Optional, Tuple
 
 import numpy as np
-import torch
 
 from mistral_inference.cache import BufferCache
 from mistral_inference.mamba import Mamba
 from mistral_inference.transformer import Transformer
+from torch import Tensor, argmax, cat, cumsum, gather, inference_mode, log_softmax, long, multinomial, softmax, sort, tensor
 
 
-@torch.inference_mode()
+@inference_mode()
 def generate_mamba(
     encoded_prompts: List[List[int]],
     model: Mamba,
@@ -18,7 +18,7 @@ def generate_mamba(
     chunk_size: Optional[int] = None,
     eos_id: Optional[int] = None,
 ) -> Tuple[List[List[int]], List[List[float]]]:
-    input_ids = torch.tensor(encoded_prompts, device=model.device)
+    input_ids = tensor(encoded_prompts, device=model.device)
     output = model.model.generate(
         input_ids=input_ids,
         max_length=input_ids.shape[-1] + max_tokens,
@@ -40,7 +40,7 @@ def generate_mamba(
     return generated_tokens, _logprobs
 
 
-@torch.inference_mode()
+@inference_mode()
 def generate(
     encoded_prompts: List[List[int]],
     model: Transformer,
@@ -51,11 +51,11 @@ def generate(
     chunk_size: Optional[int] = None,
     eos_id: Optional[int] = None,
 ) -> Tuple[List[List[int]], List[List[float]]]:
-    images_torch: List[List[torch.Tensor]] = []
+    images_torch: List[List[Tensor]] = []
     if images:
         assert chunk_size is None
         images_torch = [
-            [torch.tensor(im, device=model.device, dtype=model.dtype) for im in images_for_sample]
+            [tensor(im, device=model.device, dtype=model.dtype) for im in images_for_sample]
             for images_for_sample in images
         ]
 
@@ -86,23 +86,23 @@ def generate(
     if chunk_size is None:
         chunk_size = max_prompt_len
 
-    flattened_images: List[torch.Tensor] = sum(images_torch, [])
+    flattened_images: List[Tensor] = sum(images_torch, [])
 
     # Encode prompt by chunks
     for s in range(0, max_prompt_len, chunk_size):
         prompt_chunks = [p[s : s + chunk_size] for p in encoded_prompts]
         assert all(len(p) > 0 for p in prompt_chunks)
         prelogits = model.forward(
-            torch.tensor(sum(prompt_chunks, []), device=model.device, dtype=torch.long),
+            tensor(sum(prompt_chunks, []), device=model.device, dtype=long),
             images=flattened_images,
             seqlens=[len(p) for p in prompt_chunks],
             cache=cache,
         )
-        logits = torch.log_softmax(prelogits, dim=-1)
+        logits = log_softmax(prelogits, dim=-1)
 
         if last_token_prelogits is not None:
             # Pass > 1
-            last_token_logits = torch.log_softmax(last_token_prelogits, dim=-1)
+            last_token_logits = log_softmax(last_token_prelogits, dim=-1)
             for i_seq in range(B):
                 logprobs[i_seq].append(last_token_logits[i_seq, prompt_chunks[i_seq][0]].item())
 
@@ -113,13 +113,13 @@ def generate(
 
         last_token_prelogits = prelogits.index_select(
             0,
-            torch.tensor([len(p) for p in prompt_chunks], device=prelogits.device).cumsum(dim=0) - 1,
+            tensor([len(p) for p in prompt_chunks], device=prelogits.device).cumsum(dim=0) - 1,
         )
         assert last_token_prelogits.shape == (B, V)
 
     # decode
     generated_tensors = []
-    is_finished = torch.tensor([False for _ in range(B)])
+    is_finished = tensor([False for _ in range(B)])
 
     assert last_token_prelogits is not None
     for _ in range(max_tokens):
@@ -131,7 +131,7 @@ def generate(
         if is_finished.all():
             break
 
-        last_token_logits = torch.log_softmax(last_token_prelogits, dim=-1)
+        last_token_logits = log_softmax(last_token_prelogits, dim=-1)
         for i in range(B):
             logprobs[i].append(last_token_logits[i, next_token[i]].item())
 
@@ -141,30 +141,30 @@ def generate(
 
     generated_tokens: List[List[int]]
     if generated_tensors:
-        generated_tokens = torch.cat(generated_tensors, 1).tolist()
+        generated_tokens = cat(generated_tensors, 1).tolist()
     else:
         generated_tokens = []
 
     return generated_tokens, logprobs
 
 
-def sample(logits: torch.Tensor, temperature: float, top_p: float) -> torch.Tensor:
+def sample(logits: Tensor, temperature: float, top_p: float) -> Tensor:
     if temperature > 0:
-        probs = torch.softmax(logits / temperature, dim=-1)
+        probs = softmax(logits / temperature, dim=-1)
         next_token = sample_top_p(probs, top_p)
     else:
-        next_token = torch.argmax(logits, dim=-1).unsqueeze(0)
+        next_token = argmax(logits, dim=-1).unsqueeze(0)
 
     return next_token.reshape(-1)
 
 
-def sample_top_p(probs: torch.Tensor, p: float) -> torch.Tensor:
+def sample_top_p(probs: Tensor, p: float) -> Tensor:
     assert 0 <= p <= 1
 
-    probs_sort, probs_idx = torch.sort(probs, dim=-1, descending=True)
-    probs_sum = torch.cumsum(probs_sort, dim=-1)
+    probs_sort, probs_idx = sort(probs, dim=-1, descending=True)
+    probs_sum = cumsum(probs_sort, dim=-1)
     mask = probs_sum - probs_sort > p
     probs_sort[mask] = 0.0
     probs_sort.div_(probs_sort.sum(dim=-1, keepdim=True))
-    next_token = torch.multinomial(probs_sort, num_samples=1)
-    return torch.gather(probs_idx, -1, next_token)
+    next_token = multinomial(probs_sort, num_samples=1)
+    return gather(probs_idx, -1, next_token)

@@ -1,7 +1,6 @@
 from functools import partial
 from typing import Optional, Tuple, Type, Union
 
-import torch
 from torch import nn
 from xformers.ops.fmha import memory_efficient_attention  # type: ignore
 from xformers.ops.fmha.attn_bias import BlockDiagonalMask
@@ -11,11 +10,12 @@ from mistral_inference.cache import CacheView
 from mistral_inference.lora import LoRALinear
 from mistral_inference.moe import MoeArgs, MoeLayer
 from mistral_inference.rope import apply_rotary_emb
+from torch import Tensor, ones, repeat_interleave, rsqrt
 
 
-def repeat_kv(keys: torch.Tensor, values: torch.Tensor, repeats: int, dim: int) -> Tuple[torch.Tensor, torch.Tensor]:
-    keys = torch.repeat_interleave(keys, repeats=repeats, dim=dim)
-    values = torch.repeat_interleave(values, repeats=repeats, dim=dim)
+def repeat_kv(keys: Tensor, values: Tensor, repeats: int, dim: int) -> Tuple[Tensor, Tensor]:
+    keys = repeat_interleave(keys, repeats=repeats, dim=dim)
+    values = repeat_interleave(values, repeats=repeats, dim=dim)
     return keys, values
 
 
@@ -55,11 +55,11 @@ class Attention(nn.Module):
 
     def forward(
         self,
-        x: torch.Tensor,
-        freqs_cis: torch.Tensor,
+        x: Tensor,
+        freqs_cis: Tensor,
         cache: Optional[CacheView] = None,
         mask: Optional[BlockDiagonalMask] = None,
-    ) -> torch.Tensor:
+    ) -> Tensor:
         assert mask is None or cache is None
         seqlen_sum, _ = x.shape
 
@@ -88,7 +88,7 @@ class Attention(nn.Module):
         output = memory_efficient_attention(xq, key, val, mask if cache is None else cache.mask)
         output = output.view(seqlen_sum, self.n_heads * self.head_dim)
 
-        assert isinstance(output, torch.Tensor)
+        assert isinstance(output, Tensor)
 
         return self.wo(output)  # type: ignore
 
@@ -102,20 +102,20 @@ class FeedForward(nn.Module):
         self.w2 = MaybeLora(hidden_dim, dim, bias=False)
         self.w3 = MaybeLora(dim, hidden_dim, bias=False)
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, x: Tensor) -> Tensor:
         return self.w2(nn.functional.silu(self.w1(x)) * self.w3(x))  # type: ignore
 
 
-class RMSNorm(torch.nn.Module):
+class RMSNorm(nn.Module):
     def __init__(self, dim: int, eps: float = 1e-6):
         super().__init__()
         self.eps = eps
-        self.weight = nn.Parameter(torch.ones(dim))
+        self.weight = nn.Parameter(ones(dim))
 
-    def _norm(self, x: torch.Tensor) -> torch.Tensor:
-        return x * torch.rsqrt(x.pow(2).mean(-1, keepdim=True) + self.eps)
+    def _norm(self, x: Tensor) -> Tensor:
+        return x * rsqrt(x.pow(2).mean(-1, keepdim=True) + self.eps)
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, x: Tensor) -> Tensor:
         output = self._norm(x.float()).type_as(x)
         return output * self.weight
 
@@ -157,11 +157,11 @@ class TransformerBlock(nn.Module):
 
     def forward(
         self,
-        x: torch.Tensor,
-        freqs_cis: torch.Tensor,
+        x: Tensor,
+        freqs_cis: Tensor,
         cache: Optional[CacheView] = None,
         mask: Optional[BlockDiagonalMask] = None,
-    ) -> torch.Tensor:
+    ) -> Tensor:
         r = self.attention.forward(self.attention_norm(x), freqs_cis, cache)
         h = x + r
         r = self.feed_forward.forward(self.ffn_norm(h))

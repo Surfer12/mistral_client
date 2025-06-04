@@ -6,8 +6,7 @@ from pathlib import Path
 from typing import List, Optional, Tuple, Type, Union
 
 import fire  # type: ignore
-import torch
-import torch.distributed as dist
+import dist as dist
 from mistral_common.protocol.instruct.messages import (
     AssistantMessage,
     ContentChunk,
@@ -31,6 +30,7 @@ from mistral_inference.args import TransformerArgs
 from mistral_inference.generate import generate, generate_mamba
 from mistral_inference.mamba import Mamba
 from mistral_inference.transformer import Transformer
+from torch import cuda, int, tensor
 
 
 def is_torchrun() -> bool:
@@ -108,11 +108,11 @@ def interactive(
     lora_path: Optional[str] = None,
 ) -> None:
     if is_torchrun():
-        torch.distributed.init_process_group()
-        torch.cuda.set_device(torch.distributed.get_rank())
-        should_print = torch.distributed.get_rank() == 0
+        dist.init_process_group()
+        cuda.set_device(dist.get_rank())
+        should_print = dist.get_rank() == 0
 
-        num_pipeline_ranks = torch.distributed.get_world_size()
+        num_pipeline_ranks = dist.get_world_size()
     else:
         should_print = True
         num_pipeline_ranks = 1
@@ -158,9 +158,9 @@ def interactive(
                 tokens = tokenizer.encode(prompt, bos=True, eos=False)
                 images = []
 
-            length_tensor = torch.tensor([len(tokens)], dtype=torch.int)
+            length_tensor = tensor([len(tokens)], dtype=int)
         else:
-            length_tensor = torch.tensor([0], dtype=torch.int)
+            length_tensor = tensor([0], dtype=int)
             images = []
 
         if is_torchrun():
@@ -198,11 +198,11 @@ def demo(
     lora_path: Optional[str] = None,
 ) -> None:
     if is_torchrun():
-        torch.distributed.init_process_group()
-        torch.cuda.set_device(torch.distributed.get_rank())
-        should_print = torch.distributed.get_rank() == 0
+        dist.init_process_group()
+        cuda.set_device(dist.get_rank())
+        should_print = dist.get_rank() == 0
 
-        num_pipeline_ranks = torch.distributed.get_world_size()
+        num_pipeline_ranks = dist.get_world_size()
     else:
         should_print = True
         num_pipeline_ranks = 1
