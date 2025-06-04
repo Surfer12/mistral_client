@@ -1,5 +1,5 @@
-import requests
-import openai
+from requests import post
+# Removed unused openai import to avoid importing entire library
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -20,5 +20,5 @@ headers = {
     "Content-Type": "application/json"
 }
 
-response = requests.post(url, json=payload, headers=headers)
+response = post(url, json=payload, headers=headers)
 print(response.json())

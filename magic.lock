@@ -304,8 +304,6 @@ packages:
   - python >=3.13,<3.14.0a0 *_cp313
   - python_abi 3.13.* *_cp313
   - yarl >=1.17.0,<2.0
-  arch: arm64
-  platform: osx
   license: MIT AND Apache-2.0
   license_family: Apache
   size: 973683
@@ -382,8 +380,6 @@ packages:
   - python >=3.13,<3.14.0a0
   - python >=3.13,<3.14.0a0 *_cp313
   - python_abi 3.13.* *_cp313
-  arch: arm64
-  platform: osx
   license: LGPL-2.1-or-later
   license_family: LGPL
   size: 517274
@@ -688,8 +684,6 @@ packages:
   - python_abi 3.13.* *_cp313
   constrains:
   - libbrotlicommon 1.1.0 hd74edd7_2
-  arch: arm64
-  platform: osx
   license: MIT
   license_family: MIT
   size: 339067
@@ -757,8 +751,6 @@ packages:
   - python >=3.13.0rc1,<3.14.0a0
   - python >=3.13.0rc1,<3.14.0a0 *_cp313
   - python_abi 3.13.* *_cp313
-  arch: arm64
-  platform: osx
   license: MIT
   license_family: MIT
   size: 282115
@@ -820,8 +812,6 @@ packages:
   - python >=3.13,<3.14.0a0
   - python >=3.13,<3.14.0a0 *_cp313
   - python_abi 3.13.* *_cp313
-  arch: arm64
-  platform: osx
   license: BSD-3-Clause
   license_family: BSD
   size: 247420
@@ -887,8 +877,6 @@ packages:
   - python >=3.13,<3.14.0a0
   - python >=3.13,<3.14.0a0 *_cp313
   - python_abi 3.13.* *_cp313
-  arch: arm64
-  platform: osx
   license: MIT
   license_family: MIT
   size: 2534826
@@ -1071,8 +1059,6 @@ packages:
   - python >=3.13,<3.14.0a0
   - python >=3.13,<3.14.0a0 *_cp313
   - python_abi 3.13.* *_cp313
-  arch: arm64
-  platform: osx
   license: MIT
   license_family: MIT
   size: 2861719
@@ -1095,8 +1081,6 @@ packages:
   - python >=3.13,<3.14.0a0
   - python >=3.13,<3.14.0a0 *_cp313
   - python_abi 3.13.* *_cp313
-  arch: arm64
-  platform: osx
   license: Apache-2.0
   license_family: APACHE
   size: 110243
@@ -1367,8 +1351,6 @@ packages:
   - python_abi 3.13.* *_cp313
   constrains:
   - __osx >=11.0
-  arch: arm64
-  platform: osx
   license: MIT
   license_family: MIT
   size: 272745
@@ -1409,8 +1391,6 @@ packages:
   - python >=3.13.0rc1,<3.14.0a0
   - python >=3.13.0rc1,<3.14.0a0 *_cp313
   - python_abi 3.13.* *_cp313
-  arch: arm64
-  platform: osx
   license: BSD-3-Clause
   license_family: BSD
   size: 61424
@@ -1831,8 +1811,6 @@ packages:
   md5: 85ccccb47823dd9f7a99d2c7f530342f
   depends:
   - __osx >=11.0
-  arch: arm64
-  platform: osx
   license: BSD-2-Clause
   license_family: BSD
   size: 71829
@@ -2095,8 +2073,6 @@ packages:
   - python_abi 3.13.* *_cp313
   constrains:
   - jinja2 >=3.0.0
-  arch: arm64
-  platform: osx
   license: BSD-3-Clause
   license_family: BSD
   size: 24757
@@ -2109,8 +2085,6 @@ packages:
   - python >=3.13,<3.14.0a0
   - python_abi 3.13.* *_cp313
   - tornado >=5
-  arch: arm64
-  platform: osx
   license: PSF-2.0
   license_family: PSF
   size: 17538
@@ -2138,8 +2112,6 @@ packages:
   - python-dateutil >=2.7
   - python_abi 3.13.* *_cp313
   - qhull >=2020.2,<2020.3.0a0
-  arch: arm64
-  platform: osx
   license: PSF-2.0
   license_family: PSF
   size: 8180005
@@ -2288,8 +2260,6 @@ packages:
   - python >=3.13,<3.14.0a0
   - python >=3.13,<3.14.0a0 *_cp313
   - python_abi 3.13.* *_cp313
-  arch: arm64
-  platform: osx
   license: Apache-2.0
   license_family: APACHE
   size: 75248
@@ -2303,8 +2273,6 @@ packages:
   - python >=3.13,<3.14.0a0
   - python >=3.13,<3.14.0a0 *_cp313
   - python_abi 3.13.* *_cp313
-  arch: arm64
-  platform: osx
   license: BSD-3-Clause
   license_family: BSD
   size: 360333
@@ -2330,8 +2298,6 @@ packages:
   - python >=3.13,<3.14.0a0 *_cp313
   - python_abi 3.13.* *_cp313
   - typing_extensions >=4.6.0
-  arch: arm64
-  platform: osx
   license: MIT
   license_family: MIT
   size: 10453519
@@ -2393,8 +2359,6 @@ packages:
   - python_abi 3.13.* *_cp313
   constrains:
   - numpy-base <0a0
-  arch: arm64
-  platform: osx
   license: BSD-3-Clause
   license_family: BSD
   size: 6532195
@@ -2475,8 +2439,6 @@ packages:
   - python_abi 3.13.* *_cp313
   constrains:
   - __osx >=11.0
-  arch: arm64
-  platform: osx
   license: Apache-2.0
   license_family: APACHE
   size: 305545
@@ -2537,8 +2499,6 @@ packages:
   - xlsxwriter >=3.0.5
   - pandas-gbq >=0.19.0
   - fsspec >=2022.11.0
-  arch: arm64
-  platform: osx
   license: BSD-3-Clause
   license_family: BSD
   size: 14408557
@@ -2607,8 +2567,6 @@ packages:
   - python >=3.13,<3.14.0a0 *_cp313
   - python_abi 3.13.* *_cp313
   - tk >=8.6.13,<8.7.0a0
-  arch: arm64
-  platform: osx
   license: HPND
   size: 42900837
   timestamp: 1746646630611
@@ -2687,8 +2645,6 @@ packages:
   - python >=3.13,<3.14.0a0
   - python >=3.13,<3.14.0a0 *_cp313
   - python_abi 3.13.* *_cp313
-  arch: arm64
-  platform: osx
   license: Apache-2.0
   license_family: APACHE
   size: 51553
@@ -2701,8 +2657,6 @@ packages:
   - python >=3.13,<3.14.0a0
   - python >=3.13,<3.14.0a0 *_cp313
   - python_abi 3.13.* *_cp313
-  arch: arm64
-  platform: osx
   license: BSD-3-Clause
   license_family: BSD
   size: 484139
@@ -2744,8 +2698,6 @@ packages:
   - pyarrow-core 20.0.0 *_0_*
   - python >=3.13,<3.14.0a0
   - python_abi 3.13.* *_cp313
-  arch: arm64
-  platform: osx
   license: Apache-2.0
   license_family: APACHE
   size: 25893
@@ -2764,8 +2716,6 @@ packages:
   constrains:
   - numpy >=1.21,<3
   - apache-arrow-proc * cpu
-  arch: arm64
-  platform: osx
   license: Apache-2.0
   license_family: APACHE
   size: 4706499
@@ -2814,8 +2764,6 @@ packages:
   - python_abi 3.13.* *_cp313
   constrains:
   - __osx >=11.0
-  arch: arm64
-  platform: osx
   license: MIT
   license_family: MIT
   size: 1720344
@@ -2913,8 +2861,6 @@ packages:
   - readline >=8.2,<9.0a0
   - tk >=8.6.13,<8.7.0a0
   - tzdata
-  arch: arm64
-  platform: osx
   license: Python-2.0
   size: 12136505
   timestamp: 1744663807953
@@ -2975,8 +2921,6 @@ packages:
   - python >=3.13,<3.14.0a0 *_cp313
   - python_abi 3.13.* *_cp313
   - xxhash >=0.8.3,<0.8.4.0a0
-  arch: arm64
-  platform: osx
   license: BSD-2-Clause
   license_family: BSD
   size: 21867
@@ -3009,8 +2953,6 @@ packages:
   - python >=3.13,<3.14.0a0 *_cp313
   - python_abi 3.13.* *_cp313
   - yaml >=0.2.5,<0.3.0a0
-  arch: arm64
-  platform: osx
   license: MIT
   license_family: MIT
   size: 194243
@@ -3026,8 +2968,6 @@ packages:
   - python >=3.13,<3.14.0a0 *_cp313
   - python_abi 3.13.* *_cp313
   - zeromq >=4.3.5,<4.4.0a0
-  arch: arm64
-  platform: osx
   license: BSD-3-Clause
   license_family: BSD
   size: 369287
@@ -3067,8 +3007,6 @@ packages:
   - python >=3.13,<3.14.0a0
   - python >=3.13,<3.14.0a0 *_cp313
   - python_abi 3.13.* *_cp313
-  arch: arm64
-  platform: osx
   license: Python-2.0
   license_family: PSF
   size: 369054
@@ -3123,8 +3061,6 @@ packages:
   - python_abi 3.13.* *_cp313
   constrains:
   - __osx >=11.0
-  arch: arm64
-  platform: osx
   license: Apache-2.0
   license_family: APACHE
   size: 382359
@@ -3146,8 +3082,6 @@ packages:
   - python >=3.13,<3.14.0a0
   - python >=3.13,<3.14.0a0 *_cp313
   - python_abi 3.13.* *_cp313
-  arch: arm64
-  platform: osx
   license: BSD-3-Clause
   license_family: BSD
   size: 14548640
@@ -3261,8 +3195,6 @@ packages:
   - python >=3.13.0rc2,<3.14.0a0 *_cp313
   - python_abi 3.13.* *_cp313
   - scipy !=1.9.2,>=1.8
-  arch: arm64
-  platform: osx
   license: BSD-3-Clause
   license_family: BSD
   size: 11901433
@@ -3298,8 +3230,6 @@ packages:
   - python_abi 3.13.* *_cp313
   constrains:
   - __osx >=11.0
-  arch: arm64
-  platform: osx
   license: Apache-2.0
   license_family: APACHE
   size: 2022803
@@ -3330,8 +3260,6 @@ packages:
   - python >=3.13,<3.14.0a0
   - python >=3.13,<3.14.0a0 *_cp313
   - python_abi 3.13.* *_cp313
-  arch: arm64
-  platform: osx
   license: Apache-2.0
   license_family: Apache
   size: 874352
@@ -3455,8 +3383,6 @@ packages:
   - python >=3.13.0rc1,<3.14.0a0
   - python >=3.13.0rc1,<3.14.0a0 *_cp313
   - python_abi 3.13.* *_cp313
-  arch: arm64
-  platform: osx
   license: MIT
   license_family: MIT
   size: 13689
@@ -3563,8 +3489,6 @@ packages:
   - python >=3.13,<3.14.0a0
   - python >=3.13,<3.14.0a0 *_cp313
   - python_abi 3.13.* *_cp313
-  arch: arm64
-  platform: osx
   license: Apache-2.0
   license_family: Apache
   size: 150519
@@ -3609,8 +3533,6 @@ packages:
   - python >=3.13,<3.14.0a0
   - python >=3.13,<3.14.0a0 *_cp313
   - python_abi 3.13.* *_cp313
-  arch: arm64
-  platform: osx
   license: BSD-3-Clause
   license_family: BSD
   size: 536612

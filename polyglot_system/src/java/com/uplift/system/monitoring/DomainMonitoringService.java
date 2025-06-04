@@ -15,11 +15,14 @@ import com.uplift.system.monitoring.models.Metric;
 import com.uplift.system.monitoring.exceptions.MetricCollectionException;
 import org.jetbrains.annotations.NotNull;
 import java.time.Duration;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Service for monitoring and visualizing domain integration metrics
  */
 public class DomainMonitoringService extends AbstractDomainMonitor {
+    private static final Logger LOG = Logger.getLogger(DomainMonitoringService.class.getName());
     private final SystemConfig config;
     private final Map<String, MetricCollector> metricCollectors;
     private final Map<String, List<MetricSnapshot>> metricHistory;
@@ -499,7 +502,7 @@ public class DomainMonitoringService extends AbstractDomainMonitor {
                 }
             }
         } catch (Exception e) {
-            System.err.println("Error during metric aggregation: " + e.getMessage());
+            LOG.log(Level.SEVERE, "Error during metric aggregation", e);
         }
     }
 
@@ -541,7 +544,7 @@ public class DomainMonitoringService extends AbstractDomainMonitor {
                 checkThreshold(domain, metrics, threshold);
             }
         } catch (Exception e) {
-            System.err.println("Error checking alert thresholds: " + e.getMessage());
+            LOG.log(Level.SEVERE, "Error checking alert thresholds", e);
         }
     }
 
@@ -614,7 +617,7 @@ public class DomainMonitoringService extends AbstractDomainMonitor {
             try {
                 listener.accept(alert);
             } catch (Exception e) {
-                System.err.println("Error notifying alert listener: " + e.getMessage());
+                LOG.log(Level.SEVERE, "Error notifying alert listener", e);
             }
         }
     }

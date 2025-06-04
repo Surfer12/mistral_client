@@ -2,6 +2,18 @@ from typing import List
 
 import numpy as np
 import torch
+import random
+
+# Set seeds for reproducibility across CPU and GPU operations
+torch.manual_seed(42)
+torch.cuda.manual_seed_all(42) # For multi-GPU setups
+np.random.seed(42) # For numpy
+random.seed(42) # For Python's built-in random module
+
+# Ensure deterministic behavior for cuDNN backend
+torch.backends.cudnn.deterministic = True
+torch.backends.cudnn.benchmark = False
+
 from mistral_inference.args import VisionEncoderArgs
 from mistral_inference.generate import generate_mamba
 from mistral_inference.main import generate

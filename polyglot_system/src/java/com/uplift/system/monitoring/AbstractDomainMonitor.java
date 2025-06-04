@@ -10,6 +10,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Abstract base class for domain monitoring implementations.
@@ -17,6 +19,7 @@ import java.util.function.Consumer;
  */
 public abstract class AbstractDomainMonitor implements MetricCollector {
     
+    private static final Logger LOG = Logger.getLogger(AbstractDomainMonitor.class.getName());
     protected final Map<String, List<Metric>> metricsByDomain;
     protected final List<Consumer<Metric>> metricListeners;
     protected final String monitorName;
@@ -123,7 +126,7 @@ public abstract class AbstractDomainMonitor implements MetricCollector {
                 listener.accept(metric);
             } catch (Exception e) {
                 // Log error but continue notifying other listeners
-                System.err.println("Error notifying listener: " + e.getMessage());
+                LOG.log(Level.SEVERE, "Error notifying listener", e);
             }
         }
     }
