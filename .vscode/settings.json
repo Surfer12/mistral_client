@@ -1,0 +1,11 @@
+{
+    // Tell Amazon Q to ignore the entire virtual‑env folder:
+    "amazonQ.scan.ignoredPaths": [
+      "${workspaceFolder}/.venv/**"
+    ],
+
+    // Optional: also hide .venv from the explorer
+    "files.exclude": {
+      "**/.venv": true
+    }
+  }
